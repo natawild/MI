@@ -1,0 +1,388 @@
+---
+title: "Trabalho_metodos"
+author: "Grupo Nos"
+date: "07/12/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+
+```{r Ler dataset, include=FALSE}
+library(readr)
+#Tendencias_de_moda_e_comportamento_do_consumidor_2 <- read_csv("C:/Users/linin/Downloads/Tendências-de-moda-e-comportamento-do-consumidor-2.csv")
+#View(Tendencias_de_moda_e_comportamento_do_consumidor_2)
+ 
+#celia 
+
+ResultadosInquerito <- read_csv("ResultadosInquerito.csv")
+View(ResultadosInquerito)
+
+#Dataet em estudo
+dados=ResultadosInquerito
+attach(dados)
+```
+
+
+
+```{r Renomear variaveis, include=FALSE}
+
+#Renomear variáveis
+Genero= `Qual o seu género?`
+Motivo=`Qual o principal motivo pelo qual vai às  compras?`
+Frequencia= `Com que frequência compra roupa?`
+Tipo_Roupa= `Que tipo de roupa compra com mais frequência?`
+Forma= `De que forma costuma obter os seus produtos?`
+Padrao= `Qual o padrão de roupa favorito?`
+Gasto= `Quanto dinheiro gastou, em média, em roupas nos últimos 3 meses?`
+Idade= `Idade (em anos)`
+
+
+
+```
+
+
+```{r Perceber variaveis, include=FALSE}
+
+table(Genero)
+table(Motivo)
+table(Frequencia)
+table(Tipo_Roupa)
+table(Forma)
+table(Padrao)
+table(Gasto)
+table(Idade)
+
+
+```
+
+
+```{r factor, include=FALSE}
+Genero<- factor(Genero)
+#Género=Genero.f
+
+Motivo<- factor(Motivo)
+#Motivo=Motivo.f
+
+Frequencia<- factor(Frequencia)
+#Frequencia= Frequencia.f
+
+Tipo_Roupa<- factor(Tipo_Roupa)
+#Tipo_Roupa= Tipo_Roupa.f
+
+Forma<- factor(Forma)
+#Forma= Forma.f
+
+Padrao<- factor(Padrao)
+#Padrão= Padrao.f
+
+Gasto <- factor(Gasto)
+#Gasto= Gasto.f
+```
+
+
+```{r Substituir strings, include=FALSE}
+library(stringr)
+table(Motivo)
+Motivo1=str_replace_all(Motivo,c("Por necessidade" = "Outros",
+                                 "Porque necessito de algo que não tenho"="Outros",
+                                 "Porque necessito de algo que não tenho"="Outros",
+                                 "Quando preciso de algo urgente"="Outros",
+                                 "Falta-me uma  peça específica"= "Outros",
+                                 "Ver tudo e mais alguma coisa para depois comprar"= "Outros"))
+
+
+
+Motivo2=replace(Motivo1,match(c("Necessidade"),Motivo1),"Outros")
+
+
+table(Motivo2)
+
+Motivo=factor(Motivo2)
+is.factor(Motivo)
+
+```
+
+
+
+```{r Perceber as opções de cada vetor, include=FALSE}
+#Perceber as opções de cada vetor
+levels(Genero)
+levels(Motivo)
+levels(Frequencia)
+levels(Tipo_Roupa)
+levels(Forma)
+levels(Padrao)
+levels(Gasto)
+
+```
+
+
+## Genero
+
+
+## Perceber o balanceamento das variáveis
+
+
+```{r pressure, echo=FALSE}
+
+z=pie(table(Forma),col=c("coral2","cornsilk"),radius = 0.8)
+x=pie(table(Padrao), col=c("coral4","cornsilk","coral2"),radius=0.8)
+c=pie(table(Genero), col=c("coral4","cornsilk"), radius=0.8)
+v=pie(table(Motivo), col=c("coral4","cornsilk","coral2","antiquewhite1", "burlywood1","coral"), radius = 0.75)#alterar isto
+b=hist(Idade, ylim=c(0,50),xlim=c(10,60), col="coral2",xlab="Idade", ylab = "Número de pessoas", main = "Idade")
+
+
+
+```
+
+Maioria das pessoas da amostra(?) em estudo compram em loja fisica
+Preferência predominante para ausência de padrão
+Mais pessoas do sexo feminino, apesar que estái quase 50/50
+Os motivos principais: Maior leque de escolhas e substituir roupas
+
+
+
+
+
+## Tudo comparado à Idade
+
+###  Idade vs frequencia
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+par(mfrow=c(1,2)) 
+p1= ggplot(dados, aes(Idade, fill = Frequencia)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Frequencia com que as pessoas vão as compras")
+p1
+
+i=ggplot(dados, aes(x=Idade, y=Frequencia)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Frequência com que fazem compras", x="Idade")+
+  ggtitle("Idade vs Frequência com que fazem compras")
+i
+#library(gridExtra)
+#gridExtra::grid.arrange(p1, i, ncol = 1)
+
+```
+
+
+Percebe-se que em idades inferiores as pessoas compram roupa com mais frequência.
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+p2 <- ggplot(dados, aes(Idade, fill = Forma)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Forma que as pessoas fazem compras")
+p2
+
+
+i1=ggplot(dados, aes(x=Idade, y=Forma)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Forma como obtêm os produtos", x="Idade")+
+  ggtitle("Idade vs Forma como obtêm os produtos")
+
+i1
+
+```
+
+Compras em lojas online estão associadas a idades mais jovens.
+
+```{r, echo=FALSE}
+
+
+p3 <- ggplot(dados, aes(Idade, fill = Gasto)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Gasto com roupa")
+p3
+
+
+i3=ggplot(dados, aes(x=Gasto, y=Idade)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(x="Gasto nos ultimos três meses", y="Idade")+
+  ggtitle("Idade vs Gasto os utlimos três meses")
+
+i3
+
+
+
+``` 
+Os jovens gastam mais dinheiro em roupa,até aos 30 anos.
+```{r, echo=FALSE}
+ #p7 <- ggplot(dados, aes(x = Idade, fill = Gasto )) +
+ # geom_density(alpha = 0.8) +
+#  theme(legend.position = "bottom") +
+ # labs (fill = "Legenda") +
+#  labs(x = "Glicose", y = "Densidade", title = "Gráfico de densidade da glicose") 
+```
+ 
+
+
+```{r, echo=FALSE}
+p4 <- ggplot(dados, aes(Idade, fill = Padrao)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Preferência de padrão de roupa")
+p4
+
+i4=ggplot(dados, aes(x=Idade, y=Padrao)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(x="Gasto nos ultimos três meses", y="Idade")+
+  ggtitle("Idade vs Gasto os utlimos três meses")
+
+i4
+
+``` 
+Apesar de a maioria preferir sem padrão, pessoas com idades inferiores, jovens até aos 25, preferem pardrões (Riscas ou Bolas) quando comprados com idades mais elevadas. 
+
+```{r, echo=FALSE}
+p5 <- ggplot(dados, aes(Idade, fill = Motivo)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Motivo")
+p5 #nao diz anda de jeito
+
+i6=ggplot(dados, aes(x=Idade, y=Motivo)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Forma que as pessoas fazem compras")
+
+i6
+
+```
+Motivos como Comprar presentes, Para ter um mior leque de escolhas e como momentos de descontração apontados, estão associados a idades mais jovens. Os restantes motivos apontam para todas as idades.
+
+
+
+
+```{r, echo=FALSE}
+
+p6 <- ggplot(dados, aes(Idade, fill = Tipo_Roupa)) +
+  geom_histogram() +
+  theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Tipo de roupa")
+p6 #nao diz nada de jeito
+
+
+i7=ggplot(dados, aes(x=Idade, y=Tipo_Roupa)) +
+  geom_point()+ theme(legend.position = "bottom") + 
+  labs(fill="Legenda") + labs(y="Quantidade de pessoas", x="Idade")+
+  ggtitle("Idade vs Forma que as pessoas fazem compras")
+
+i7
+```
+Não diz nada de jeito.
+
+
+#Tabela de dupla entrada motivo vs Genero
+Tirar print com o view
+```{r}
+tabela= table(Genero,Motivo)
+Total_linha<-margin.table(tabela,2)  # O argumento 2 define a marginal da linha
+Total_coluna<-margin.table(tabela,1) # O argumento 1 define a marginal da coluna
+Total_linha
+Total_coluna
+ola<-rbind(cbind(tabela,Total_coluna),c(Total_linha, sum(Total_coluna)))
+dimnames(ola)[[1]][3]<-"Total_linha" 
+ola
+
+tabela2=data.frame(ola)
+tabela2
+
+
+names(tabela2)[1]<-"Comprar um presente"
+names(tabela2)[2]="Momento de descontração"
+names(tabela2)[3]="Outros"
+names(tabela2)[4]="Para ter um maior leque de escolhas"
+names(tabela2)[5]="Substituir roupas quentes por frias"
+
+tabela2
+View(tabela2)
+#rm(tabela2)
+tabela2=subset(tabela2, select=c(1,2,4,5,3,6))
+View(tabela2)
+```
+
+
+
+## Tudo comparado ao género
+
+
+```{r grafs, echo=FALSE}
+
+
+
+p7 <- ggplot(dados,aes(x = Genero, fill = Motivo)) + 
+  geom_bar(position = "Dodge") + 
+  labs (x = "Motivo") + 
+  labs (fill = "Legenda", y="Total de pessoas") +
+  theme(legend.position = "bottom") +
+  labs(title = "Genero vs Motivo")
+p7
+
+
+p8 <- ggplot(dados,aes(x = Genero, fill = Padrao)) + 
+  geom_bar(position = "Dodge") + 
+  labs (x = "Padrão", y="Total de pessoas") + 
+  labs (fill = "Legenda") +
+  theme(legend.position = "bottom") +
+  labs(title = "Genero vs Padrao")
+p8
+
+p9<- ggplot(dados,aes(x = Genero, fill = Gasto)) + 
+  geom_bar(position = "Dodge") + 
+  labs (x = "Resultado" , y="Total de pessoas") + 
+  labs (fill = "Legenda") +
+  theme(legend.position = "bottom") +
+  labs(title = "Genero vs Gasto")
+p9
+
+
+
+
+```
+
+#Tabela de dupla entrada motivo vs Genero
+
+tirar print com o view
+```{r}
+tabela_gp= table(Genero,Padrao)
+Total_linha_1<-margin.table(tabela_gp,2)  # O argumento 2 define a marginal da linha
+Total_coluna_1<-margin.table(tabela_gp,1) # O argumento 1 define a marginal da coluna
+simx<-rbind(cbind(tabela_gp,Total_coluna_1),c(Total_linha_1, sum(Total_coluna)))
+dimnames(simx)[[1]][3]<-"Total_linha" 
+simx
+
+tabela3=data.frame(simx)
+tabela3
+
+
+names(tabela3)[1]<-"Bolas"
+names(tabela3)[2]="Riscas"
+names(tabela3)[3]="Sem padrão"
+names(tabela3)[4]="Total_coluna"
+
+View(tabela3)
+```
+
+
+
+
